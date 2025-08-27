@@ -1,34 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Welcome to SSR
 
-## Getting Started
-
-First, run the development server:
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+in another terminal
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm run server
+```
 
-## Learn More
+## Stack
+- React@_19_
+- NextJS@_15_
+- tailwindcss@_4_
+- shadcn ready 
 
-To learn more about Next.js, take a look at the following resources:
+## Server
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+I have prepared a server for you. I download _**Transport for London**_ accidents statistics (2019) as a json file.  
+it houses 50626 entries for that single year.
+You can query from that json with json-server@v0.17.4
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. open a terminal, run `pnpm run server`
+1. query from `fetch("http://localhost:3030/accidents-stat")` for the full list
+1. you can do pagination with query params by `/accidents-stat?_page=1&_limit=20` ([guide](https://github.com/typicode/json-server/tree/v0.17.4?tab=readme-ov-file#paginate))
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Objectives
+1. you must use server side rendering on page.tsx or any inner components, **`"use client"` directive is prohibited**, with the following exceptions:
+    - layout
+    - error
+    - not found
+    - components where returned root is `<form>`
+1. you must do pagination in _*SSR way*_
+1. do not use *Tanstack Query* as it is for client side fetching 
+1. The table is in `http://localhost:3000/`, individual accident details screen at `http://localhost:3000/<accident id>`
+1. you need to handle 404 not found and error in _*SSR way*_
+1. you can loosly resemble these screenshot
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Bonus stage
+Here are challenges that utilise SSR
+- add filtering on location or borough field, or sorting via query params
+- use modal to display individual accident page
+- use `<form>` `<input>` `<button type="submit">` to append query param for keyword filtering (allow to use `"use client";` for this single component, not whole page)
+- explore caching in nextjs
