@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "server": "json-server --reporter ndjson ./server/tfl_accidentstats_2019.json"
+    "server": "json-server -p 3030 ./server/tfl_accidentstats_2019.json"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
