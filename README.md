@@ -41,6 +41,11 @@ You can query from that json with json-server@v0.17.4
 1. The table is in `http://localhost:3000/`, individual accident details screen at `http://localhost:3000/<accident id>`
 1. you need to handle 404 not found and error in _*SSR way*_
 1. you can loosly resemble these screenshot
+<img width="1512" height="945" alt="Screenshot 2025-08-27 at 13 24 50" src="https://github.com/user-attachments/assets/34d04f9a-ad25-4c31-a3d5-5c2c354d60d1" />
+<img width="1512" height="945" alt="Screenshot 2025-08-27 at 13 24 55" src="https://github.com/user-attachments/assets/8b1722a2-4a00-440d-b3e0-59d576425b7a" />
+<img width="1512" height="945" alt="Screenshot 2025-08-27 at 13 28 07" src="https://github.com/user-attachments/assets/6a241956-05b9-425c-8c34-5b5ef4d4999e" />
+
+
 
 
 ## Bonus stage
