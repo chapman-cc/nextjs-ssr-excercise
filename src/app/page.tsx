@@ -1,3 +1,5 @@
+import SortIcon from "@/app/components/sort-icon";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -17,6 +19,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { paginateByCurrentPage } from "../utils/paginate-by-current-page";
 import SearchBar from "./components/search-bar";
+import { getSortQuery as sortQ } from "./get-sort-queries";
+import { PageParams } from "./types";
 
 // json-server doesn't add a pagination decorator for you, so here you go
 const TOTAL_LENGTH = 50626;
@@ -27,23 +31,26 @@ const pageNumbers = Array.from(
   (_, i) => i + 1
 );
 
-export type PageParams = {
-  _page?: string;
-  _limit?: string;
-  _loc?: string;
-};
-
 interface Props {
   searchParams: Promise<PageParams>;
 }
 
 export default async function Home({ searchParams }: Props) {
   const queries = await searchParams;
-  const _page = queries._page || "1";
-  const _limit = (queries._limit = "" + LIMIT);
+  const _page = queries._page || 1;
+  const _limit = queries._limit || LIMIT;
+  const _sort = queries._sort;
+  const _order = queries._order;
   const _location = queries._loc ? decodeURI(queries._loc) : undefined;
 
-  const search = new URLSearchParams({ _page, _limit });
+  const search = new URLSearchParams({
+    _page: String(_page),
+    _limit: String(_limit),
+  });
+  if (_sort) {
+    search.set("_sort", _sort);
+    search.set("_order", _order || "asc");
+  }
   if (_location) {
     search.set("location_like", _location);
     search.set("borough_like", _location);
@@ -53,7 +60,6 @@ export default async function Home({ searchParams }: Props) {
     `http://localhost:3030/accidents-stat?${search.toString()}`
   );
 
-  const currentPage = parseInt(_page);
   if (!response.ok) {
     if (response.status === 404) {
       notFound();
@@ -64,12 +70,15 @@ export default async function Home({ searchParams }: Props) {
   const accidents = (await response.json()) as AccidentStat[];
 
   const { isFirstPage, isLastPage, paginationNumbers } = paginateByCurrentPage(
-    currentPage,
+    _page,
     pageNumbers
   );
 
   const firstPage = pageNumbers[0];
   const lastPage = pageNumbers[pageNumbers.length - 1];
+
+  const q = (additionalQueries: object) =>
+    Object.assign({}, queries, additionalQueries);
 
   return (
     <main className="space-y-5 mt-4 mx-8">
@@ -78,11 +87,37 @@ export default async function Home({ searchParams }: Props) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Location (Borough)</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Serverity</TableHead>
-            <TableHead>Casualties Count</TableHead>
+            <TableHead>
+              <Link href={{ query: q(sortQ("id", _order)) }}>
+                ID {_sort === "id" && <SortIcon order={_order} />}
+              </Link>
+            </TableHead>
+            <TableHead>
+              <Link href={{ query: q(sortQ("location", _order)) }}>
+                Location (Borough){" "}
+                {_sort === "location" && <SortIcon order={_order} />}
+              </Link>
+            </TableHead>
+            <TableHead>
+              <Link href={{ query: q(sortQ("date", _order)) }}>
+                Date {_sort === "date" && <SortIcon order={_order} />}
+              </Link>
+            </TableHead>
+            <TableHead>
+              <Link href={{ query: q(sortQ("serverity", _order)) }}>
+                Serverity {_sort === "severity" && <SortIcon order={_order} />}
+              </Link>
+            </TableHead>
+            <TableHead>
+              <Link
+                href={{
+                  query: q(sortQ("casualties.length", _order)),
+                }}
+              >
+                Casualties Count{" "}
+                {_sort === "casualties.length" && <SortIcon order={_order} />}
+              </Link>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -113,13 +148,13 @@ export default async function Home({ searchParams }: Props) {
       </Table>
 
       <p>
-        Page {currentPage} of {_location ? "?" : pageNumbers.length}
+        Page {_page} of {_location ? "?" : pageNumbers.length}
       </p>
       <Pagination>
         <PaginationContent>
           {!isFirstPage && (
             <PaginationItem>
-              <Link href={{ query: { ...queries, _page: currentPage - 1 } }}>
+              <Link href={{ query: q({ _page: _page - 1 }) }}>
                 <Button variant="outline">Prev</Button>
               </Link>
             </PaginationItem>
@@ -134,10 +169,10 @@ export default async function Home({ searchParams }: Props) {
           {paginationNumbers.map((_page) => (
             <PaginationItem
               key={_page}
-              className={currentPage === _page ? "font-extrabold" : undefined}
+              className={_page === _page ? "font-extrabold" : undefined}
             >
-              <Link href={{ query: { ...queries, _page } }}>
-                <Button variant={_page === currentPage ? "default" : "outline"}>
+              <Link href={{ query: q({ _page }) }}>
+                <Button variant={_page === _page ? "default" : "outline"}>
                   {_page}
                 </Button>
               </Link>
@@ -150,7 +185,7 @@ export default async function Home({ searchParams }: Props) {
           )}
           {!isLastPage && (
             <PaginationItem>
-              <Link href={{ query: { ...queries, _page: currentPage + 1 } }}>
+              <Link href={{ query: q({ _page: _page + 1 }) }}>
                 <Button variant="outline">Next</Button>
               </Link>
             </PaginationItem>
