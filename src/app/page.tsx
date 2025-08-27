@@ -16,6 +16,8 @@ import { AccidentStat } from "@/types/accident-stat";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { paginateByCurrentPage } from "../utils/paginate-by-current-page";
+import SearchBar from "./components/search-bar";
+
 // json-server doesn't add a pagination decorator for you, so here you go
 const TOTAL_LENGTH = 50626;
 const LIMIT = 15;
@@ -25,19 +27,27 @@ const pageNumbers = Array.from(
   (_, i) => i + 1
 );
 
+export type PageParams = {
+  _page?: string;
+  _limit?: string;
+  _loc?: string;
+};
+
 interface Props {
-  searchParams: Promise<{
-    _page?: string;
-    _limit?: string;
-  }>;
+  searchParams: Promise<PageParams>;
 }
 
 export default async function Home({ searchParams }: Props) {
   const queries = await searchParams;
   const _page = queries._page || "1";
   const _limit = (queries._limit = "" + LIMIT);
+  const _location = queries._loc ? decodeURI(queries._loc) : undefined;
 
   const search = new URLSearchParams({ _page, _limit });
+  if (_location) {
+    search.set("location_like", _location);
+    search.set("borough_like", _location);
+  }
 
   const response = await fetch(
     `http://localhost:3030/accidents-stat?${search.toString()}`
@@ -62,7 +72,9 @@ export default async function Home({ searchParams }: Props) {
   const lastPage = pageNumbers[pageNumbers.length - 1];
 
   return (
-    <main>
+    <main className="space-y-5 mt-4 mx-8">
+      <SearchBar />
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -101,7 +113,7 @@ export default async function Home({ searchParams }: Props) {
       </Table>
 
       <p>
-        Page {currentPage} of {pageNumbers.length}
+        Page {currentPage} of {_location ? "?" : pageNumbers.length}
       </p>
       <Pagination>
         <PaginationContent>
