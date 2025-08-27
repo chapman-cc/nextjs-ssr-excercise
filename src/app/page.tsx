@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { AccidentStat } from "@/types/accident-stat";
 import Link from "next/link";
+import { paginateByCurrentPage } from "../utils/paginate-by-current-page";
 // json-server doesn't add a pagination decorator for you, so here you go
 const TOTAL_LENGTH = 50626;
 const LIMIT = 15;
@@ -22,7 +23,14 @@ const pageNumbers = Array.from(
   { length: TOTAL_LENGTH / LIMIT },
   (_, i) => i + 1
 );
-export default function Home() {
+  const { isFirstPage, isLastPage, paginationNumbers } = paginateByCurrentPage(
+    currentPage,
+    pageNumbers
+  );
+
+  const firstPage = pageNumbers[0];
+  const lastPage = pageNumbers[pageNumbers.length - 1];
+
   return (
     <main>
       <Table>
