@@ -1,11 +1,3 @@
-import SortIcon from "@/app/components/sort-icon";
-import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-} from "@/components/ui/pagination";
 import {
   Table,
   TableBody,
@@ -15,11 +7,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AccidentStat } from "@/types/accident-stat";
+import { createHrefQueryHoc } from "@/utils/create-href-query";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { paginateByCurrentPage } from "../utils/paginate-by-current-page";
-import SearchBar from "./components/search-bar";
-import { getSortQuery as sortQ } from "./get-sort-queries";
+import SearchBar from "./_components/search-bar";
+import SortIcon from "./_components/sort-icon";
+import { getSortQuery as sortQ } from "./_utils/get-sort-queries";
 import { PageParams } from "./types";
 
 // json-server doesn't add a pagination decorator for you, so here you go
@@ -69,16 +62,7 @@ export default async function Home({ searchParams }: Props) {
 
   const accidents = (await response.json()) as AccidentStat[];
 
-  const { isFirstPage, isLastPage, paginationNumbers } = paginateByCurrentPage(
-    _page,
-    pageNumbers
-  );
-
-  const firstPage = pageNumbers[0];
-  const lastPage = pageNumbers[pageNumbers.length - 1];
-
-  const q = (additionalQueries: object) =>
-    Object.assign({}, queries, additionalQueries);
+  const q = createHrefQueryHoc(queries);
 
   return (
     <main className="space-y-5 mt-4 mx-8">
@@ -150,48 +134,6 @@ export default async function Home({ searchParams }: Props) {
       <p>
         Page {_page} of {_location ? "?" : pageNumbers.length}
       </p>
-      <Pagination>
-        <PaginationContent>
-          {!isFirstPage && (
-            <PaginationItem>
-              <Link href={{ query: q({ _page: _page - 1 }) }}>
-                <Button variant="outline">Prev</Button>
-              </Link>
-            </PaginationItem>
-          )}
-
-          {paginationNumbers[0] !== firstPage && (
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-          )}
-
-          {paginationNumbers.map((_page) => (
-            <PaginationItem
-              key={_page}
-              className={_page === _page ? "font-extrabold" : undefined}
-            >
-              <Link href={{ query: q({ _page }) }}>
-                <Button variant={_page === _page ? "default" : "outline"}>
-                  {_page}
-                </Button>
-              </Link>
-            </PaginationItem>
-          ))}
-          {paginationNumbers[paginationNumbers.length - 1] !== lastPage && (
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-          )}
-          {!isLastPage && (
-            <PaginationItem>
-              <Link href={{ query: q({ _page: _page + 1 }) }}>
-                <Button variant="outline">Next</Button>
-              </Link>
-            </PaginationItem>
-          )}
-        </PaginationContent>
-      </Pagination>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { PageParams } from "./types";
+import { PageParams } from "../types";
 
 export const getSortQuery: (
   field: string,
