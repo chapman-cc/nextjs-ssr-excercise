@@ -108,21 +108,23 @@ export default async function Home({ searchParams }: Props) {
           {accidents.map((accident) => (
             <TableRow key={accident.id}>
               <TableCell>
-                <Link href={`/${accident.id}`}>{accident.id}</Link>
+                <Link href={`/accidents/${accident.id}`}>{accident.id}</Link>
               </TableCell>
               <TableCell>
-                <Link href={`/${accident.id}`}>
+                <Link href={`/accidents/${accident.id}`}>
                   {accident.location} ({accident.borough})
                 </Link>
               </TableCell>
               <TableCell>
-                <Link href={`/${accident.id}`}>{accident.date}</Link>
+                <Link href={`/accidents/${accident.id}`}>{accident.date}</Link>
               </TableCell>
               <TableCell>
-                <Link href={`/${accident.id}`}>{accident.severity}</Link>
+                <Link href={`/accidents/${accident.id}`}>
+                  {accident.severity}
+                </Link>
               </TableCell>
               <TableCell>
-                <Link href={`/${accident.id}`}>
+                <Link href={`/accidents/${accident.id}`}>
                   {accident.casualties.length}
                 </Link>
               </TableCell>
