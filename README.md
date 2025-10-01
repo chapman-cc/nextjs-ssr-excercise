@@ -28,6 +28,7 @@ You can query from that json with json-server@v0.17.4
 1. open a terminal, run `pnpm run server`
 1. query from `fetch("http://localhost:3030/accidents-stat")` for the full list
 1. you can do pagination with query params by `/accidents-stat?_page=1&_limit=20` ([guide](https://github.com/typicode/json-server/tree/v0.17.4?tab=readme-ov-file#paginate))
+1. the schema is on this [page](https://api.tfl.gov.uk/swagger/ui/index.html?url=/swagger/docs/v1#!/AccidentStats/AccidentStats_Get)
 
 
 ## Objectives
