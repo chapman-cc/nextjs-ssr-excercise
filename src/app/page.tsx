@@ -1,8 +1,10 @@
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
   Table,
@@ -29,7 +31,8 @@ export default async function Page({
 }: {
   searchParams: { page?: string };
 }) {
-  const currentPage = parseInt(searchParams.page || "1", 10);
+  const { page } = await searchParams;
+  const currentPage = parseInt(page || "1", 10);
   const accidents = (await fetch(
     `http://localhost:3030/accidents-stat?_page=${currentPage}&_limit=${LIMIT}`
   ).then((res) => res.json())) as AccidentStat[];
@@ -71,26 +74,25 @@ export default async function Page({
         <Pagination>
           <PaginationContent>
             {!isFirstPage && (
-              <PaginationItem>
-                <Link href={`?page=${currentPage - 1}`}>Previous</Link>
-              </PaginationItem>
+              <PaginationPrevious
+                href={`?page=${currentPage - 1}`}
+              ></PaginationPrevious>
             )}
 
             {paginationNumbers.map((pageNum) => (
-              <PaginationItem key={pageNum}>
-                <Link
-                  href={`?page=${pageNum}`}
-                  className={pageNum === currentPage ? "font-bold" : ""}
-                >
-                  {pageNum}
-                </Link>
-              </PaginationItem>
+              <PaginationLink
+                key={pageNum}
+                href={`?page=${pageNum}`}
+                isActive={pageNum === currentPage}
+              >
+                {pageNum}
+              </PaginationLink>
             ))}
 
             {!isLastPage && (
-              <PaginationItem>
-                <Link href={`?page=${currentPage + 1}`}>Next</Link>
-              </PaginationItem>
+              <PaginationNext
+                href={`?page=${currentPage + 1}`}
+              ></PaginationNext>
             )}
           </PaginationContent>
         </Pagination>
