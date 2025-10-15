@@ -7,9 +7,14 @@ import {
 } from "@/components/ui/card";
 import { AccidentStat } from "@/types/accident-stat";
 
-export default async function page() {
-  
-  const accident = /** fetch resources */ as  AccidentStat;
+export default async function page({
+  params: { accidentId },
+}: {
+  params: { accidentId: string };
+}) {
+  const accident = (await fetch(
+    `http://localhost:3030/accidents-stat/${accidentId}`
+  ).then((res) => res.json())) as AccidentStat;
 
   return (
     <div className="min-h-dvh flex justify-center items-center">
